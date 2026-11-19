@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tablero Electoral AR</title>
+  <meta name="description" content="Tableros de datos políticos y legislativos para decisiones basadas en evidencia: resultados electorales por circuito, seguimiento legislativo y monitoreo de prensa, con datos oficiales y metodología transparente.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Paleta institucional: se usan SOLO estas variables. */
+    :root {
+      --color-primario:     #0F1E36;  /* azul marino: header, footer, títulos */
+      --color-secundario:   #1F3A5F;  /* azul pizarra: secciones destacadas */
+      --color-acento:       #0B7A70;  /* verde azulado: acciones y datos clave */
+      --color-acento-hover: #095F57;
+      --color-fondo:        #F7F8FA;
+      --color-superficie:   #FFFFFF;  /* tarjetas */
+      --color-texto:        #111827;
+      --color-texto-suave:  #4A5568;
+      --color-borde:        #E2E8F0;
+
+      --radio: 8px;
+      --sombra: 0 1px 2px rgba(15, 30, 54, .06), 0 2px 8px rgba(15, 30, 54, .04);
+      --ancho: 1120px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-weight: 400;
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      color: var(--color-texto);
+      background: var(--color-fondo);
+      overflow-x: hidden;
+    }
+    h1, h2, h3 { color: var(--color-primario); font-weight: 700; line-height: 1.2; margin: 0 0 .6em; letter-spacing: -.01em; }
+    h1 { font-size: clamp(2rem, 4.4vw, 3rem); }
+    h2 { font-size: clamp(1.55rem, 3vw, 2.05rem); }
+    h3 { font-size: 1.15rem; }
+    p { margin: 0 0 1em; }
+    a { color: var(--color-acento); }
+    a:hover { color: var(--color-acento-hover); }
+    a:focus-visible, .boton:focus-visible {
+      outline: 3px solid var(--color-acento);
+      outline-offset: 3px;
+      border-radius: var(--radio);
+    }
+    .num { font-variant-numeric: tabular-nums; }
+    .contenedor { width: min(100% - 2.5rem, var(--ancho)); margin-inline: auto; }
+    .texto-suave { color: var(--color-texto-suave); }
+    .icono { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Botones: el acento se reserva para acciones */
+    .boton {
+      display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+      padding: .75rem 1.3rem; border-radius: var(--radio);
+      font-weight: 600; font-size: 1rem; text-decoration: none;
+      border: 1px solid transparent; transition: background-color .15s ease, color .15s ease;
+    }
+    .boton-acento { background: var(--color-acento); color: var(--color-superficie); }
+    .boton-acento:hover { background: var(--color-acento-hover); color: var(--color-superficie); }
+    .boton-contorno { border-color: var(--color-primario); color: var(--color-primario); background: var(--color-superficie); }
+    .boton-contorno:hover { background: var(--color-fondo); color: var(--color-primario); }
+    .boton-blanco { background: var(--color-superficie); color: var(--color-acento); }
+    .boton-blanco:hover { background: var(--color-fondo); color: var(--color-acento-hover); }
+
+    /* Encabezado */
+    header { position: sticky; top: 0; z-index: 10; background: var(--color-primario); }
+    .barra { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 0; }
+    .marca { display: flex; align-items: center; gap: .6rem; color: var(--color-superficie); text-decoration: none; font-weight: 700; font-size: 1.1rem; }
+    .marca:hover { color: var(--color-superficie); }
+    .marca svg { width: 30px; height: 30px; flex: none; }
+    nav ul { display: flex; gap: 1.6rem; list-style: none; margin: 0; padding: 0; }
+    nav a { color: var(--color-borde); text-decoration: none; font-weight: 500; font-size: .97rem; }
+    nav a:hover { color: var(--color-superficie); }
+    .barra .boton { padding: .55rem 1rem; font-size: .93rem; }
+
+    /* Portada */
+    .portada { padding: clamp(3rem, 7vw, 5.5rem) 0; }
+    .portada-grilla { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+    .bajada { font-size: clamp(1.08rem, 1.8vw, 1.22rem); color: var(--color-texto-suave); max-width: 33rem; }
+    .acciones { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.6rem; }
+    .nota-fuente { display: flex; align-items: center; gap: .45rem; margin-top: 1.4rem; font-size: .92rem; color: var(--color-texto-suave); }
+    .nota-fuente .icono { width: 18px; height: 18px; color: var(--color-acento); flex: none; }
+
+    /* Mockups de tablero */
+    .mockup {
+      background: var(--color-superficie); border: 1px solid var(--color-borde);
+      border-radius: var(--radio); box-shadow: var(--sombra); padding: 1.2rem;
+    }
+    .mockup-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: .8rem; margin-bottom: .9rem; }
+    .mockup-titulo { font-weight: 600; color: var(--color-primario); font-size: .98rem; }
+    .rotulo {
+      font-size: .74rem; font-weight: 600; color: var(--color-texto-suave);
+      border: 1px solid var(--color-borde); border-radius: 999px; padding: .1rem .55rem; white-space: nowrap;
+    }
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; margin-bottom: 1rem; }
+    .kpi { border: 1px solid var(--color-borde); border-radius: var(--radio); padding: .6rem .7rem; background: var(--color-fondo); }
+    .kpi-titulo { font-size: .72rem; color: var(--color-texto-suave); text-transform: uppercase; letter-spacing: .03em; }
+    .kpi-valor { font-size: 1.25rem; font-weight: 700; color: var(--color-primario); font-variant-numeric: tabular-nums; line-height: 1.3; }
+    .kpi-valor.clave { color: var(--color-acento); }
+    .barras { display: grid; gap: .45rem; }
+    .barra-fila { display: grid; grid-template-columns: 4.6rem 1fr 3.4rem; align-items: center; gap: .6rem; font-size: .86rem; }
+    .barra-fila span:first-child { color: var(--color-texto-suave); }
+    .barra-fila span:last-child { text-align: right; font-variant-numeric: tabular-nums; color: var(--color-texto); font-weight: 600; }
+    .pista { background: var(--color-fondo); border-radius: 4px; height: 14px; overflow: hidden; }
+    .relleno { height: 100%; border-radius: 4px; }
+    .c-primario { background: var(--color-primario); }
+    .c-secundario { background: var(--color-secundario); }
+    .c-acento { background: var(--color-acento); }
+    .c-suave { background: var(--color-texto-suave); }
+    .c-borde { background: var(--color-borde); }
+
+    /* Franja de fuentes */
+    .franja { background: var(--color-superficie); border-block: 1px solid var(--color-borde); padding: 1.1rem 0; }
+    .franja ul { display: flex; flex-wrap: wrap; gap: .6rem 2rem; list-style: none; margin: 0; padding: 0; color: var(--color-texto-suave); font-size: .95rem; }
+    .franja li { display: flex; align-items: center; gap: .5rem; }
+    .franja .icono { width: 18px; height: 18px; color: var(--color-acento); }
+
+    /* Secciones */
+    section { padding: clamp(3rem, 7vw, 5rem) 0; }
+    .encabezado-seccion { max-width: 46rem; margin-bottom: 2.2rem; }
+    .antetitulo { display: block; font-size: .8rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-texto-suave); margin-bottom: .5rem; }
+    .blanco { background: var(--color-superficie); }
+
+    .grilla-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2rem; }
+    .grilla-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2rem; }
+    .tarjeta {
+      background: var(--color-superficie); border: 1px solid var(--color-borde);
+      border-radius: var(--radio); box-shadow: var(--sombra); padding: 1.5rem;
+    }
+    .tarjeta p { color: var(--color-texto-suave); margin: 0; }
+    .tarjeta-icono { width: 44px; height: 44px; border-radius: var(--radio); border: 1px solid var(--color-borde); display: grid; place-items: center; color: var(--color-acento); margin-bottom: 1rem; background: var(--color-fondo); }
+    .lista-items { list-style: none; padding: 0; margin: .9rem 0 0; color: var(--color-texto-suave); font-size: .95rem; }
+    .lista-items li { padding: .35rem 0; border-top: 1px solid var(--color-borde); }
+    .capacidad { display: flex; gap: .8rem; align-items: flex-start; }
+    .capacidad .icono { color: var(--color-acento); flex: none; margin-top: .15rem; }
+    .capacidad h3 { font-size: 1rem; margin-bottom: .2rem; }
+    .capacidad p { color: var(--color-texto-suave); margin: 0; font-size: .95rem; }
+
+    /* Mockups secundarios */
+    .expedientes { list-style: none; margin: 0; padding: 0; font-size: .88rem; }
+    .expedientes li { display: flex; justify-content: space-between; align-items: center; gap: .6rem; padding: .55rem 0; border-top: 1px solid var(--color-borde); }
+    .expedientes li:first-child { border-top: 0; }
+    .expedientes b { color: var(--color-primario); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .estado { font-size: .74rem; font-weight: 600; border-radius: 999px; padding: .12rem .55rem; white-space: nowrap; }
+    .estado-comision { background: var(--color-fondo); color: var(--color-texto-suave); border: 1px solid var(--color-borde); }
+    .estado-dictamen { background: var(--color-secundario); color: var(--color-superficie); }
+    .estado-aprobado { background: var(--color-acento); color: var(--color-superficie); }
+    .grafico-linea { width: 100%; height: auto; display: block; }
+    .grafico-linea .grilla { stroke: var(--color-borde); stroke-width: 1; }
+    .grafico-linea .serie { fill: none; stroke: var(--color-acento); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+    .grafico-linea .serie-2 { fill: none; stroke: var(--color-secundario); stroke-width: 2; stroke-dasharray: 5 4; }
+    .grafico-linea text { fill: var(--color-texto-suave); font-size: 11px; font-family: Inter, sans-serif; }
+    .leyenda { display: flex; gap: 1rem; font-size: .8rem; color: var(--color-texto-suave); margin-top: .4rem; }
+    .leyenda i { display: inline-block; width: 14px; height: 3px; vertical-align: middle; margin-right: .35rem; }
+
+    /* Sección destacada: metodología */
+    .destacada { background: var(--color-secundario); color: var(--color-superficie); }
+    .destacada h2 { color: var(--color-superficie); }
+    .destacada .antetitulo { color: var(--color-borde); }
+    .destacada p { color: var(--color-borde); }
+    .dos-columnas { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; align-items: start; }
+    .principios { list-style: none; padding: 0; margin: 1.2rem 0 0; }
+    .principios li { display: flex; gap: .7rem; margin-bottom: .8rem; color: var(--color-borde); }
+    .principios .icono { color: var(--color-superficie); flex: none; margin-top: .1rem; width: 20px; height: 20px; }
+    .cifras { display: grid; gap: .8rem; }
+    .cifra { background: var(--color-superficie); border-radius: var(--radio); padding: 1rem 1.2rem; }
+    .cifra strong { display: block; font-size: 1.9rem; font-weight: 700; color: var(--color-acento); line-height: 1.15; font-variant-numeric: tabular-nums; }
+    .cifra span { color: var(--color-texto-suave); }
+    .cifras-nota { font-size: .85rem; margin-top: .6rem; }
+
+    /* Destinatarios */
+    .destinatario h3 { font-size: 1.02rem; margin-bottom: .3rem; }
+    .destinatario p { font-size: .95rem; }
+
+    /* Llamado final */
+    .llamado { background: var(--color-secundario); text-align: center; }
+    .llamado h2 { color: var(--color-superficie); }
+    .llamado p { color: var(--color-borde); max-width: 40rem; margin-inline: auto; }
+    .llamado .acciones { justify-content: center; }
+
+    /* Contacto y pie */
+    .contacto { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 2rem; }
+    .contacto-dato { display: flex; align-items: center; gap: .6rem; font-size: 1.1rem; font-weight: 600; }
+    .contacto-dato .icono { color: var(--color-acento); }
+    footer { background: var(--color-primario); color: var(--color-borde); padding: 2rem 0; font-size: .92rem; }
+    footer p { margin: 0; }
+    footer .contenedor { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .8rem; }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .portada-grilla, .dos-columnas { grid-template-columns: 1fr; }
+      .grilla-3 { grid-template-columns: 1fr; max-width: 40rem; }
+      .grilla-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) { nav { display: none; } }
+    @media (max-width: 560px) {
+      .grilla-4 { grid-template-columns: 1fr; }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .acciones .boton { width: 100%; }
+      .barra .boton { padding: .5rem .75rem; font-size: .88rem; }
+      .marca { font-size: 1rem; }
+      .solo-amplio { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Íconos de línea (trazos estilo Lucide) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-mapa" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-edificio" viewBox="0 0 24 24"><path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l9 5H3z"/></symbol>
+    <symbol id="i-diario" viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></symbol>
+    <symbol id="i-barras" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></symbol>
+    <symbol id="i-comparar" viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="16" rx="1"/><rect x="14" y="4" width="7" height="16" rx="1"/></symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+    <symbol id="i-documento" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
+    <symbol id="i-correo" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></symbol>
+    <symbol id="i-base" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></symbol>
+  </svg>
+
+  <header>
+    <div class="contenedor barra">
+      <a class="marca" href="#inicio" aria-label="Tablero Electoral AR, ir al inicio">
+        <svg viewBox="0 0 30 30" aria-hidden="true">
+          <rect width="30" height="30" rx="7" style="fill:var(--color-secundario)"/>
+          <rect x="7" y="15" width="4" height="8" rx="1" style="fill:var(--color-borde)"/>
+          <rect x="13" y="9" width="4" height="14" rx="1" style="fill:var(--color-superficie)"/>
+          <rect x="19" y="12" width="4" height="11" rx="1" style="fill:var(--color-acento)"/>
+        </svg>
+        Tablero Electoral AR
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#ejemplos">Ejemplos</a></li>
+          <li><a href="#metodologia">Metodología</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </nav>
+      <a class="boton boton-acento" href="mailto:leandrodpmecq@gmail.com?subject=Solicitud%20de%20demostraci%C3%B3n"><span class="solo-amplio">Solicitar</span>demostración</a>
+    </div>
+  </header>
+
+  <main id="inicio">
+
+    <!-- Portada -->
+    <section class="portada" aria-labelledby="titulo-principal">
+      <div class="contenedor portada-grilla">
+        <div>
+          <h1 id="titulo-principal">Tableros de datos políticos y legislativos para decisiones basadas en evidencia</h1>
+          <p class="bajada">Resultados electorales por circuito, seguimiento de proyectos en el Concejo y la Legislatura y monitoreo de prensa, construidos sobre datos oficiales y con metodología transparente.</p>
+          <div class="acciones">
+            <a class="boton boton-acento" href="mailto:leandrodpmecq@gmail.com?subject=Solicitud%20de%20demostraci%C3%B3n">Solicitar una demostración</a>
+            <a class="boton boton-contorno" href="#metodologia">Conocer la metodología</a>
+          </div>
+          <p class="nota-fuente"><svg class="icono" aria-hidden="true"><use href="#i-escudo"/></svg>Cada cifra indica su fuente oficial y puede verificarse.</p>
+        </div>
+
+        <figure class="mockup" style="margin:0" aria-label="Ejemplo de tablero electoral con datos ilustrativos">
+          <div class="mockup-cabecera">
+            <span class="mockup-titulo">Resultados · Circuito 0123</span>
+            <span class="rotulo">Datos ilustrativos</span>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><div class="kpi-titulo">Participación</div><div class="kpi-valor clave">74,3%</div></div>
+            <div class="kpi"><div class="kpi-titulo">Margen</div><div class="kpi-valor">2,1 pp</div></div>
+            <div class="kpi"><div class="kpi-titulo">NEP</div><div class="kpi-valor">3,2</div></div>
+            <div class="kpi"><div class="kpi-titulo">Mesas</div><div class="kpi-valor">98,6%</div></div>
+          </div>
+          <div class="barras" role="img" aria-label="Gráfico de barras ilustrativo: Lista A 34,8%, Lista B 32,7%, Lista C 18,9%, Lista D 9,4%, Otras 4,2%">
+            <div class="barra-fila"><span>Lista A</span><div class="pista"><div class="relleno c-acento" style="width:87%"></div></div><span>34,8%</span></div>
+            <div class="barra-fila"><span>Lista B</span><div class="pista"><div class="relleno c-primario" style="width:82%"></div></div><span>32,7%</span></div>
+            <div class="barra-fila"><span>Lista C</span><div class="pista"><div class="relleno c-suave" style="width:47%"></div></div><span>18,9%</span></div>
+            <div class="barra-fila"><span>Lista D</span><div class="pista"><div class="relleno c-secundario" style="width:24%"></div></div><span>9,4%</span></div>
+            <div class="barra-fila"><span>Otras</span><div class="pista"><div class="relleno c-borde" style="width:11%"></div></div><span>4,2%</span></div>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Franja de fuentes oficiales -->
+    <div class="franja" aria-label="Fuentes de datos">
+      <ul class="contenedor">
+        <li><svg class="icono" aria-hidden="true"><use href="#i-base"/></svg>Dirección Nacional Electoral (DINE)</li>
+        <li><svg class="icono" aria-hidden="true"><use href="#i-base"/></svg>Registros oficiales de concejos y legislaturas</li>
+        <li><svg class="icono" aria-hidden="true"><use href="#i-base"/></svg>Boletines oficiales y publicaciones de prensa</li>
+      </ul>
+    </div>
+
+    <!-- Servicios -->
+    <section id="servicios" aria-labelledby="titulo-servicios">
+      <div class="contenedor">
+        <div class="encabezado-seccion">
+          <span class="antetitulo">Servicios</span>
+          <h2 id="titulo-servicios">Tres tableros, un mismo estándar de calidad</h2>
+          <p class="texto-suave">Cada tablero se construye con fuentes oficiales, controles de calidad automáticos y una metodología documentada que puede auditarse.</p>
+        </div>
+        <div class="grilla-3">
+          <article class="tarjeta">
+            <div class="tarjeta-icono"><svg class="icono" aria-hidden="true"><use href="#i-mapa"/></svg></div>
+            <h3>Resultados electorales</h3>
+            <p>Resultados de cada cargo a nivel país, distrito, sección y circuito electoral.</p>
+            <ul class="lista-items">
+              <li>Participación, margen y competitividad</li>
+              <li>Número efectivo de partidos</li>
+              <li>Nacionalización y rankings territoriales</li>
+            </ul>
+          </article>
+          <article class="tarjeta">
+            <div class="tarjeta-icono"><svg class="icono" aria-hidden="true"><use href="#i-edificio"/></svg></div>
+            <h3>Seguimiento legislativo</h3>
+            <p>Estado de los proyectos presentados en el Concejo Deliberante o la Legislatura.</p>
+            <ul class="lista-items">
+              <li>Expedientes por estado y comisión</li>
+              <li>Tiempos de tratamiento</li>
+              <li>Alertas de cambios de estado</li>
+            </ul>
+          </article>
+          <article class="tarjeta">
+            <div class="tarjeta-icono"><svg class="icono" aria-hidden="true"><use href="#i-diario"/></svg></div>
+            <h3>Monitoreo de prensa</h3>
+            <p>Seguimiento sistemático de la agenda publicada sobre los temas de su interés.</p>
+            <ul class="lista-items">
+              <li>Menciones por tema y período</li>
+              <li>Comparación entre medios</li>
+              <li>Informes periódicos</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="grilla-4" style="margin-top:2.4rem">
+          <div class="capacidad"><svg class="icono" aria-hidden="true"><use href="#i-barras"/></svg><div><h3>Indicadores</h3><p>Métricas politológicas con fórmulas documentadas.</p></div></div>
+          <div class="capacidad"><svg class="icono" aria-hidden="true"><use href="#i-comparar"/></svg><div><h3>Comparador</h3><p>Dos territorios o períodos lado a lado.</p></div></div>
+          <div class="capacidad"><svg class="icono" aria-hidden="true"><use href="#i-descarga"/></svg><div><h3>Descargas</h3><p>CSV y Excel, siempre con su fuente.</p></div></div>
+          <div class="capacidad"><svg class="icono" aria-hidden="true"><use href="#i-documento"/></svg><div><h3>Informes</h3><p>Análisis a medida de su territorio.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ejemplos -->
+    <section id="ejemplos" class="blanco" aria-labelledby="titulo-ejemplos">
+      <div class="contenedor">
+        <div class="encabezado-seccion">
+          <span class="antetitulo">Ejemplos</span>
+          <h2 id="titulo-ejemplos">Así se ven los tableros</h2>
+          <p class="texto-suave">Los siguientes ejemplos usan datos ficticios con fines ilustrativos. No corresponden a ninguna fuerza política, legislador ni territorio real.</p>
+        </div>
+        <div class="grilla-3">
+
+          <figure class="mockup" style="margin:0" aria-label="Ejemplo ilustrativo de comparación territorial">
+            <div class="mockup-cabecera"><span class="mockup-titulo">Comparación de secciones</span><span class="rotulo">Datos ilustrativos</span></div>
+            <div class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+              <div class="kpi"><div class="kpi-titulo">Sección Norte</div><div class="kpi-valor clave">76,1%</div></div>
+              <div class="kpi"><div class="kpi-titulo">Sección Sur</div><div class="kpi-valor">71,8%</div></div>
+            </div>
+            <div class="barras">
+              <div class="barra-fila"><span>Lista A</span><div class="pista"><div class="relleno c-acento" style="width:80%"></div></div><span>40,2%</span></div>
+              <div class="barra-fila"><span>Lista B</span><div class="pista"><div class="relleno c-primario" style="width:62%"></div></div><span>31,0%</span></div>
+              <div class="barra-fila"><span>Lista C</span><div class="pista"><div class="relleno c-suave" style="width:37%"></div></div><span>18,6%</span></div>
+            </div>
+            <p class="texto-suave" style="font-size:.82rem;margin:.7rem 0 0">Participación por sección y votos en Sección Norte.</p>
+          </figure>
+
+          <figure class="mockup" style="margin:0" aria-label="Ejemplo ilustrativo de seguimiento legislativo">
+            <div class="mockup-cabecera"><span class="mockup-titulo">Proyectos en seguimiento</span><span class="rotulo">Datos ilustrativos</span></div>
+            <ul class="expedientes">
+              <li><span><b>Expte. 0142/26</b><br><span class="texto-suave">Ordenanza · Movilidad</span></span><span class="estado estado-aprobado">Aprobado</span></li>
+              <li><span><b>Expte. 0137/26</b><br><span class="texto-suave">Resolución · Presupuesto</span></span><span class="estado estado-dictamen">Con dictamen</span></li>
+              <li><span><b>Expte. 0129/26</b><br><span class="texto-suave">Ordenanza · Ambiente</span></span><span class="estado estado-comision">En comisión</span></li>
+              <li><span><b>Expte. 0118/26</b><br><span class="texto-suave">Comunicación · Salud</span></span><span class="estado estado-comision">En comisión</span></li>
+            </ul>
+          </figure>
+
+          <figure class="mockup" style="margin:0" aria-label="Ejemplo ilustrativo de monitoreo de prensa">
+            <div class="mockup-cabecera"><span class="mockup-titulo">Menciones por semana</span><span class="rotulo">Datos ilustrativos</span></div>
+            <svg class="grafico-linea" viewBox="0 0 300 150" role="img" aria-label="Gráfico de líneas ilustrativo con dos temas a lo largo de ocho semanas">
+              <line class="grilla" x1="28" y1="20" x2="295" y2="20"/>
+              <line class="grilla" x1="28" y1="60" x2="295" y2="60"/>
+              <line class="grilla" x1="28" y1="100" x2="295" y2="100"/>
+              <line class="grilla" x1="28" y1="135" x2="295" y2="135"/>
+              <text x="0" y="24">60</text><text x="0" y="64">40</text><text x="0" y="104">20</text><text x="6" y="139">0</text>
+              <polyline class="serie-2" points="30,110 68,104 106,96 144,100 182,92 220,88 258,94 292,90"/>
+              <polyline class="serie" points="30,118 68,106 106,92 144,70 182,58 220,40 258,48 292,30"/>
+              <text x="30" y="150">S1</text><text x="282" y="150">S8</text>
+            </svg>
+            <div class="leyenda"><span><i style="background:var(--color-acento)"></i>Tema 1</span><span><i style="background:var(--color-secundario)"></i>Tema 2</span></div>
+          </figure>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Metodología (sección destacada) -->
+    <section id="metodologia" class="destacada" aria-labelledby="titulo-metodologia">
+      <div class="contenedor dos-columnas">
+        <div>
+          <span class="antetitulo">Metodología</span>
+          <h2 id="titulo-metodologia">Datos oficiales y metodología transparente</h2>
+          <p>Trabajamos exclusivamente con fuentes oficiales y presentamos los resultados sin adjetivos valorativos. Los criterios de cada indicador están documentados para que cualquier persona pueda reproducirlos.</p>
+          <ul class="principios">
+            <li><svg class="icono" aria-hidden="true"><use href="#i-check"/></svg>Fuente oficial y fecha de actualización visibles en cada pantalla y cada descarga.</li>
+            <li><svg class="icono" aria-hidden="true"><use href="#i-check"/></svg>Controles automáticos: si una cifra no coincide con el archivo oficial, no se publica.</li>
+            <li><svg class="icono" aria-hidden="true"><use href="#i-check"/></svg>Criterios documentados para casos especiales y anomalías de la fuente.</li>
+            <li><svg class="icono" aria-hidden="true"><use href="#i-check"/></svg>Diseño apto para computadora y teléfono celular.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="cifras">
+            <div class="cifra"><strong>104.520</strong><span>mesas procesadas en la categoría presidencial</span></div>
+            <div class="cifra"><strong>5.752</strong><span>circuitos electorales con resultados e indicadores</span></div>
+            <div class="cifra"><strong>16</strong><span>controles de calidad por elección procesada</span></div>
+          </div>
+          <p class="cifras-nota">Cifras reales del tablero electoral: Elecciones Generales 2023, escrutinio provisorio (DINE).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Destinatarios -->
+    <section aria-labelledby="titulo-destinatarios">
+      <div class="contenedor">
+        <div class="encabezado-seccion">
+          <span class="antetitulo">A quién se dirige</span>
+          <h2 id="titulo-destinatarios">Para equipos que necesitan evidencia</h2>
+        </div>
+        <div class="grilla-4">
+          <div class="tarjeta destinatario"><h3>Concejales y asesores</h3><p>Información territorial y legislativa para el trabajo diario.</p></div>
+          <div class="tarjeta destinatario"><h3>Consultoras</h3><p>Datos validados e indicadores listos para sus estudios.</p></div>
+          <div class="tarjeta destinatario"><h3>ONG de transparencia</h3><p>Metodología abierta y controles de calidad verificables.</p></div>
+          <div class="tarjeta destinatario"><h3>Medios</h3><p>Cifras precisas, con su fuente, para la cobertura.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Llamado final -->
+    <section class="llamado" aria-labelledby="titulo-llamado">
+      <div class="contenedor">
+        <h2 id="titulo-llamado">Solicite una demostración</h2>
+        <p>Le mostraremos cómo funcionan los tableros con datos de su territorio y qué indicadores pueden acompañar su trabajo.</p>
+        <div class="acciones">
+          <a class="boton boton-blanco" href="mailto:leandrodpmecq@gmail.com?subject=Solicitud%20de%20demostraci%C3%B3n">Solicitar una demostración</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contacto -->
+    <section id="contacto" class="blanco" aria-labelledby="titulo-contacto">
+      <div class="contenedor">
+        <div class="encabezado-seccion" style="margin-bottom:1.2rem">
+          <span class="antetitulo">Contacto</span>
+          <h2 id="titulo-contacto">Estamos a su disposición</h2>
+          <p class="texto-suave">Escríbanos y le responderemos a la brevedad.</p>
+        </div>
+        <div class="contacto">
+          <a class="contacto-dato" href="mailto:leandrodpmecq@gmail.com"><svg class="icono" aria-hidden="true"><use href="#i-correo"/></svg>leandrodpmecq@gmail.com</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="contenedor">
+      <p>© 2026 Tablero Electoral AR · Servicio sin afiliación partidaria.</p>
+      <p>Datos electorales: Dirección Nacional Electoral (DINE).</p>
+    </div>
+  </footer>
+
+</body>
+</html>
