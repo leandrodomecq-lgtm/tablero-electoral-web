@@ -76,7 +76,7 @@
     /* Encabezado */
     header { position: sticky; top: 0; z-index: 10; background: var(--color-primario); }
     .barra { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 0; }
-    .marca { display: flex; align-items: center; gap: .6rem; color: var(--color-superficie); text-decoration: none; font-weight: 700; font-size: 1.1rem; }
+    .marca { display: flex; align-items: center; gap: .6rem; white-space: nowrap; color: var(--color-superficie); text-decoration: none; font-weight: 700; font-size: 1.1rem; }
     .marca:hover { color: var(--color-superficie); }
     .marca svg { width: 30px; height: 30px; flex: none; }
     nav ul { display: flex; gap: 1.6rem; list-style: none; margin: 0; padding: 0; }
@@ -142,6 +142,16 @@
     .tarjeta-icono { width: 44px; height: 44px; border-radius: var(--radio); border: 1px solid var(--color-borde); display: grid; place-items: center; color: var(--color-acento); margin-bottom: 1rem; background: var(--color-fondo); }
     .lista-items { list-style: none; padding: 0; margin: .9rem 0 0; color: var(--color-texto-suave); font-size: .95rem; }
     .lista-items li { padding: .35rem 0; border-top: 1px solid var(--color-borde); }
+    .grilla-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
+    .plan { display: flex; flex-direction: column; }
+    .plan .rotulo { align-self: flex-start; margin-bottom: .8rem; }
+    .plan-incluye { margin-top: 1rem !important; font-weight: 600; color: var(--color-primario) !important; font-size: .95rem; }
+    .plan .lista-items { margin-top: .4rem; flex: 1; }
+    .pasos-titulo { margin-top: 3rem; }
+    .paso { display: flex; gap: .8rem; align-items: flex-start; }
+    .paso-n { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--color-acento); color: var(--color-superficie); font-weight: 700; }
+    .paso h3 { font-size: 1rem; margin-bottom: .2rem; }
+    .paso p { color: var(--color-texto-suave); margin: 0; font-size: .95rem; }
     .capacidad { display: flex; gap: .8rem; align-items: flex-start; }
     .capacidad .icono { color: var(--color-acento); flex: none; margin-top: .15rem; }
     .capacidad h3 { font-size: 1rem; margin-bottom: .2rem; }
@@ -229,11 +239,12 @@
 
     /* Responsive */
     @media (max-width: 960px) {
-      .portada-grilla, .dos-columnas { grid-template-columns: 1fr; }
+      .portada-grilla, .dos-columnas, .grilla-2 { grid-template-columns: 1fr; }
       .grilla-3 { grid-template-columns: 1fr; max-width: 40rem; }
       .grilla-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-    @media (max-width: 760px) { nav { display: none; } }
+    @media (max-width: 1080px) { nav { display: none; } }
+    @media (max-width: 1240px) { nav ul { gap: 1.1rem; } nav a { font-size: .92rem; } }
     @media (max-width: 560px) {
       .grilla-4 { grid-template-columns: 1fr; }
       .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -279,6 +290,7 @@
           <li><a href="#mapa">Mapa</a></li>
           <li><a href="#ejemplos">Ejemplos</a></li>
           <li><a href="#metodologia">Metodología</a></li>
+          <li><a href="#contratar">Contratar</a></li>
           <li><a href="#contacto">Contacto</a></li>
         </ul>
       </nav>
@@ -542,6 +554,81 @@
           <div class="tarjeta destinatario"><h3>ONG de transparencia</h3><p>Metodología abierta y controles de calidad verificables.</p></div>
           <div class="tarjeta destinatario"><h3>Medios</h3><p>Cifras precisas, con su fuente, para la cobertura.</p></div>
         </div>
+      </div>
+    </section>
+
+    <!-- Modalidades de contratación -->
+    <section id="contratar" class="blanco" aria-labelledby="titulo-contratar">
+      <div class="contenedor">
+        <div class="encabezado-seccion">
+          <span class="antetitulo">Cómo contratar</span>
+          <h2 id="titulo-contratar">Servicios a medida de su territorio</h2>
+          <p class="texto-suave">Elija la modalidad que mejor se adapte a su trabajo. Cada propuesta se arma según el territorio, el alcance y los plazos que necesite.</p>
+        </div>
+        <div class="grilla-2">
+          <article class="tarjeta plan">
+            <span class="rotulo">Pago único</span>
+            <h3>Informe territorial</h3>
+            <p>Para candidatos, concejales y equipos que necesitan conocer a fondo su distrito.</p>
+            <p class="plan-incluye">Incluye:</p>
+            <ul class="lista-items">
+              <li>Resultados e indicadores de su provincia, municipio o sección, hasta el nivel de circuito</li>
+              <li>Mapas y rankings: dónde es fuerte y dónde es débil cada fuerza</li>
+              <li>Dos o tres escenarios 2027 con el reparto de bancas y los votos que faltan para cada una</li>
+              <li>Informe en PDF y datos en Excel, con fuente y metodología</li>
+              <li>Reunión de presentación de los resultados</li>
+            </ul>
+            <a class="enlace-vivo" href="mailto:leandrodpmecq@gmail.com?subject=Consulta%3A%20Informe%20territorial&amp;body=Nombre%3A%0AOrganizaci%C3%B3n%3A%0ATerritorio%20que%20le%20interesa%20%28provincia%2C%20municipio%20o%20secci%C3%B3n%29%3A%0A%C2%BFQu%C3%A9%20necesita%3F%0A">Consultar por este servicio →</a>
+          </article>
+          <article class="tarjeta plan">
+            <span class="rotulo">Abono mensual</span>
+            <h3>Acompañamiento de campaña</h3>
+            <p>Para equipos de campaña que necesitan evidencia actualizada rumbo a 2027.</p>
+            <p class="plan-incluye">Incluye:</p>
+            <ul class="lista-items">
+              <li>Escenarios actualizados con cada encuesta nueva o cambio de alianzas</li>
+              <li>Informe mensual con la evolución del distrito</li>
+              <li>Reunión mensual de análisis con el equipo</li>
+              <li>Consultas por correo durante todo el período contratado</li>
+            </ul>
+            <a class="enlace-vivo" href="mailto:leandrodpmecq@gmail.com?subject=Consulta%3A%20Acompa%C3%B1amiento%20de%20campa%C3%B1a&amp;body=Nombre%3A%0AOrganizaci%C3%B3n%3A%0ATerritorio%20que%20le%20interesa%20%28provincia%2C%20municipio%20o%20secci%C3%B3n%29%3A%0A%C2%BFQu%C3%A9%20necesita%3F%0A">Consultar por este servicio →</a>
+          </article>
+          <article class="tarjeta plan">
+            <span class="rotulo">Licencia anual</span>
+            <h3>Datos para medios y consultoras</h3>
+            <p>Para redacciones y consultoras que necesitan cifras confiables y listas para usar.</p>
+            <p class="plan-incluye">Incluye:</p>
+            <ul class="lista-items">
+              <li>Bases electorales procesadas y validadas, en CSV y Excel</li>
+              <li>Gráficos y simulador para insertar en su sitio</li>
+              <li>Actualización con cada elección nueva</li>
+              <li>Apoyo para coberturas especiales, como la noche electoral</li>
+            </ul>
+            <a class="enlace-vivo" href="mailto:leandrodpmecq@gmail.com?subject=Consulta%3A%20Datos%20para%20medios%20y%20consultoras&amp;body=Nombre%3A%0AOrganizaci%C3%B3n%3A%0ATerritorio%20que%20le%20interesa%20%28provincia%2C%20municipio%20o%20secci%C3%B3n%29%3A%0A%C2%BFQu%C3%A9%20necesita%3F%0A">Consultar por este servicio →</a>
+          </article>
+          <article class="tarjeta plan">
+            <span class="rotulo">Por jornada o curso</span>
+            <h3>Capacitación</h3>
+            <p>Para universidades, ONG, legislaturas y equipos técnicos.</p>
+            <p class="plan-incluye">Incluye:</p>
+            <ul class="lista-items">
+              <li>Análisis de datos electorales con Python, desde cero</li>
+              <li>Indicadores politológicos: participación, competitividad, número efectivo de partidos y nacionalización</li>
+              <li>Cómo armar un tablero con datos oficiales</li>
+              <li>Materiales y ejercicios con datos reales</li>
+            </ul>
+            <a class="enlace-vivo" href="mailto:leandrodpmecq@gmail.com?subject=Consulta%3A%20Capacitaci%C3%B3n&amp;body=Nombre%3A%0AOrganizaci%C3%B3n%3A%0ATerritorio%20que%20le%20interesa%20%28provincia%2C%20municipio%20o%20secci%C3%B3n%29%3A%0A%C2%BFQu%C3%A9%20necesita%3F%0A">Consultar por este servicio →</a>
+          </article>
+        </div>
+
+        <h3 class="pasos-titulo">Cómo trabajamos</h3>
+        <div class="grilla-4 pasos">
+          <div class="paso"><span class="paso-n">1</span><div><h3>Demostración gratuita</h3><p>Una reunión breve por videollamada, con los datos de su territorio.</p></div></div>
+          <div class="paso"><span class="paso-n">2</span><div><h3>Propuesta por escrito</h3><p>En 48 horas hábiles: alcance, plazos y presupuesto.</p></div></div>
+          <div class="paso"><span class="paso-n">3</span><div><h3>Desarrollo y entrega</h3><p>Informes y datos con su fuente y su metodología, listos para usar.</p></div></div>
+          <div class="paso"><span class="paso-n">4</span><div><h3>Seguimiento</h3><p>Respondemos consultas y ajustamos el trabajo a sus necesidades.</p></div></div>
+        </div>
+        <p class="nota-fuente"><svg class="icono" aria-hidden="true"><use href="#i-escudo"/></svg>Confidencialidad garantizada: trabajamos con equipos de distinto signo político y nunca compartimos el trabajo de un cliente con otro.</p>
       </div>
     </section>
 
