@@ -68,6 +68,10 @@
     .boton-contorno:hover { background: var(--color-fondo); color: var(--color-primario); }
     .boton-blanco { background: var(--color-superficie); color: var(--color-acento); }
     .boton-blanco:hover { background: var(--color-fondo); color: var(--color-acento-hover); }
+    .boton-contorno-claro { border-color: var(--color-superficie); color: var(--color-superficie); }
+    .boton-contorno-claro:hover { background: var(--color-primario); color: var(--color-superficie); }
+    .enlace-vivo { display: inline-block; margin-top: 1rem; font-weight: 600; text-decoration: none; }
+    .enlace-vivo:hover { text-decoration: underline; }
 
     /* Encabezado */
     header { position: sticky; top: 0; z-index: 10; background: var(--color-primario); }
@@ -260,7 +264,7 @@
           <p class="bajada">Resultados electorales por circuito, seguimiento de proyectos en el Concejo y la Legislatura y monitoreo de prensa, construidos sobre datos oficiales y con metodología transparente.</p>
           <div class="acciones">
             <a class="boton boton-acento" href="mailto:leandrodpmecq@gmail.com?subject=Solicitud%20de%20demostraci%C3%B3n">Solicitar una demostración</a>
-            <a class="boton boton-contorno" href="#metodologia">Conocer la metodología</a>
+            <a class="boton boton-contorno" href="https://tablero-electoral-ar.streamlit.app" target="_blank" rel="noopener">Ver el tablero electoral</a>
           </div>
           <p class="nota-fuente"><svg class="icono" aria-hidden="true"><use href="#i-escudo"/></svg>Cada cifra indica su fuente oficial y puede verificarse.</p>
         </div>
@@ -314,6 +318,7 @@
               <li>Número efectivo de partidos</li>
               <li>Nacionalización y rankings territoriales</li>
             </ul>
+            <a class="enlace-vivo" href="https://tablero-electoral-ar.streamlit.app" target="_blank" rel="noopener">Ver el tablero en vivo (Elecciones 2023) →</a>
           </article>
           <article class="tarjeta">
             <div class="tarjeta-icono"><svg class="icono" aria-hidden="true"><use href="#i-edificio"/></svg></div>
@@ -447,6 +452,7 @@
         <p>Le mostraremos cómo funcionan los tableros con datos de su territorio y qué indicadores pueden acompañar su trabajo.</p>
         <div class="acciones">
           <a class="boton boton-blanco" href="mailto:leandrodpmecq@gmail.com?subject=Solicitud%20de%20demostraci%C3%B3n">Solicitar una demostración</a>
+          <a class="boton boton-contorno-claro" href="https://tablero-electoral-ar.streamlit.app" target="_blank" rel="noopener">Ver el tablero electoral</a>
         </div>
       </div>
     </section>
